@@ -1,5 +1,9 @@
 package ipca.example.calculator
 
+
+
+import kotlin.math.sqrt
+
 class CalculatorBrain {
 
     enum class Operation(op: String) {
@@ -10,9 +14,8 @@ class CalculatorBrain {
         EQUAL("="),
         SQRT("√"),
         PERCENTAGE("%"),
-        CLEAR("AC"),
-        CLEAR_ENTRY("C");
-
+        CLEAR("C"),
+        ALL_CLEAR("A");
 
         companion object {
             fun parseOperation(op: String): Operation {
@@ -24,57 +27,55 @@ class CalculatorBrain {
                     "=" -> EQUAL
                     "√" -> SQRT
                     "%" -> PERCENTAGE
-                    "AC" -> CLEAR
-                    "C" -> CLEAR_ENTRY
+                    "C" -> CLEAR
+                    "A" -> ALL_CLEAR
                     else -> EQUAL
                 }
             }
         }
     }
 
+    var operand = 0.0
+    var operation: Operation? = null
 
-    var  operand = 0.0
-    var  operation : Operation? = null
+    fun doOperation(newOperand: Double, newOperation: Operation) {
 
-    fun unaryOperation(newOperand : Double, newOperation : Operation) {
-        var result = newOperand
-        when(newOperation){
-            Operation.SQRT -> result = kotlin.math.sqrt(newOperand)
-            Operation.PERCENTAGE -> result = newOperand / 100
-            Operation.EQUAL -> {
-                operation?.let {
-                    when(operation){
-                        Operation.ADD ->  { result = operand + newOperand }
-                        Operation.SUBTRACT -> result = operand - newOperand
-                        Operation.MULTIPLY -> result = operand * newOperand
-                        Operation.DIVIDE -> result = operand / newOperand
-                        else -> {}
+        // Operações especiais que não precisam de operação anterior
+        when (newOperation) {
+            Operation.SQRT -> {
+                operand = sqrt(newOperand)
+                return
+            }
+            Operation.PERCENTAGE -> {
+                operand = newOperand / 100.0
+                return
+            }
+            else -> {}
+        }
+
+        // Se existe uma operação pendente, executa ela primeiro
+        if (operation != null) {
+            when (operation) {
+                Operation.ADD -> operand += newOperand
+                Operation.SUBTRACT -> operand -= newOperand
+                Operation.MULTIPLY -> operand *= newOperand
+                Operation.DIVIDE -> {
+                    if (newOperand != 0.0) {
+                        operand /= newOperand
                     }
                 }
+                else -> {}
             }
-            Operation.CLEAR -> {
-                operation = null
-                result = 0.0
-            }
-            Operation.CLEAR_ENTRY -> result = 0.0
-            else -> {}
-
-        }
-        operand = result
-    }
-
-    fun doOperation(newOperand : Double, newOperation : Operation) {
-        var result = newOperand
-        when(operation){
-            Operation.ADD ->  { result = operand + newOperand }
-            Operation.SUBTRACT -> result = operand - newOperand
-            Operation.MULTIPLY -> result = operand * newOperand
-            Operation.DIVIDE -> result = operand / newOperand
-            else -> {}
+        } else {
+            // Se não há operação pendente, apenas guarda o operando
+            operand = newOperand
         }
 
-        operation = newOperation
-        operand = result
+        // Guarda a nova operação (exceto se for EQUAL)
+        operation = if (newOperation == Operation.EQUAL) {
+            null
+        } else {
+            newOperation
+        }
     }
-
 }

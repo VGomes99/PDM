@@ -57,27 +57,35 @@ fun CalculatorView(
 
     val onOperationPressed : (String) -> Unit = { op ->
 
-        if ( op == "=" || op == "AC" ||  op == "√"|| op == "%" || op == "C") {
-            calculatorBrain.unaryOperation(
-                displayText.toDouble(),
-                CalculatorBrain.Operation.parseOperation(op)
-            )
-        }else {
+        if (op == "C") {
+            // Clear: remove último dígito
+            if (displayText.length > 1) {
+                displayText = displayText.dropLast(1)
+            } else {
+                displayText = "0"
+            }
+        } else if (op == "AC") {
+            // All Clear: reseta tudo
+            displayText = "0"
+            calculatorBrain.operand = 0.0
+            calculatorBrain.operation = null
+            userIsTypingNumber = true
+        } else {
             calculatorBrain.doOperation(
                 displayText.toDouble(),
                 CalculatorBrain.Operation.parseOperation(op)
             )
+
+            val result = calculatorBrain.operand
+
+            if ((result % 1.0) == 0.0 ) {
+                displayText = result.toInt().toString()
+            }else{
+                displayText = result.toString()
+            }
+
+            userIsTypingNumber = false
         }
-
-        val result = calculatorBrain.operand
-
-        if ((result % 1.0) == 0.0 ) {
-            displayText = result.toInt().toString()
-        }else{
-            displayText = result.toString()
-        }
-
-        userIsTypingNumber = false
     }
 
     Column(
