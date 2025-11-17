@@ -16,6 +16,7 @@ import coil3.compose.AsyncImage
 import ipca.example.newsapp.models.Article
 import ipca.example.newsapp.ui.theme.NewsAppTheme
 
+
 @Composable
 fun ArticleViewCell(
     article : Article,
@@ -29,7 +30,7 @@ fun ArticleViewCell(
             .clickable{
                 onClick()
             },
-        shape = RoundedCornerShape(12.dp), // Apply rounded corners
+        shape = RoundedCornerShape(12.dp),
 
     ){
         Column (
@@ -42,7 +43,6 @@ fun ArticleViewCell(
             AsyncImage(
                 model = article.urlToImage,
                 contentDescription = article.title,
-
             )
             Text(text = article.description ?: "",
                 modifier = Modifier.padding(bottom = 10.dp))
@@ -50,13 +50,16 @@ fun ArticleViewCell(
     }
 }
 
+
 @Preview(showBackground = true)
 @Composable
 fun ArticleViewCellPreview(){
     NewsAppTheme {
         ArticleViewCell(
             article = Article(
-                "",
+                id = 1,
+                price = 99.99,
+                author = "Preview Brand",
                 title = "Title akjsfhaskjfas ",
                 description = "Description",
                 url = "",

@@ -96,11 +96,11 @@ class MainActivity : ComponentActivity() {
                                 source = "espn"
                             )
                         }
-                        composable("article/{url}"){
-                            val url = it.arguments?.getString("url")?:""
+                        composable("product/{id}") { navBackStackEntry ->
+                            val id = navBackStackEntry.arguments?.getString("id")
                             isHomeScreen = false
                             ArticleDetailView(
-                                url = url,
+                                id = id, 
                                 navController = navController
                             )
                         }

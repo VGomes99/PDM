@@ -81,7 +81,7 @@ fun ArticlesListViewContent(
                     items = uiState.articles,
                 ) { index, article ->
                     ArticleViewCell(article){
-                        navController.navigate("article/${article.url?.encodeUrl()}")
+                        navController.navigate("product/${article.id}")
                     }
                 }
             }

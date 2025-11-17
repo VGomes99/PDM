@@ -5,6 +5,8 @@ import java.net.URLDecoder
 import java.net.URLEncoder
 
 data class Article (
+    var id          : Int? = null,
+    var price       : Double? = null, // <- ADICIONADO AQUI
     var author      : String? = null,
     var title       : String? = null,
     var description : String? = null,
@@ -15,12 +17,14 @@ data class Article (
     companion object{
         fun fromJson(json : JSONObject) : Article {
             return Article(
-                json.getString("author"),
-                json.getString("title"),
-                json.getString("description"),
-                json.getString("url"),
-                json.getString("urlToImage"),
-                json.getString("publishedAt"),
+                id = json.optInt("id"),
+                price = json.optDouble("price"), // <- E ADICIONADO AQUI
+                author = json.optString("brand"),
+                title = json.optString("title"),
+                description = json.optString("description"),
+                url = json.optString("thumbnail"),
+                urlToImage = json.optString("thumbnail"),
+                publishedAt = null
             )
         }
     }

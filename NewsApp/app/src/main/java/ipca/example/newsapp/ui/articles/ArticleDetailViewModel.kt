@@ -3,32 +3,33 @@ package ipca.example.newsapp.ui.articles
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import ipca.example.newsapp.models.Article
-import okhttp3.Call
-import okhttp3.Callback
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.Response
+import okhttp3.*
 import org.json.JSONObject
 import java.io.IOException
 
-data class ArticlesListState(
-    val articles: List<Article> = emptyList(),
+// Estado para o ecrã de detalhe
+data class ArticleDetailState(
+    val article: Article? = null,
     val isLoading: Boolean = false,
     val error: String? = null
 )
 
-class ArticlesListViewModel : ViewModel() {
+class ArticleDetailViewModel : ViewModel() {
 
-    var uiState = mutableStateOf(ArticlesListState())
+    var uiState = mutableStateOf(ArticleDetailState())
         private set
 
+    fun fetchProductDetails(id: String?) {
+        if (id == null || id == "null") {
+            uiState.value = ArticleDetailState(error = "Produto não encontrado")
+            return
+        }
 
-    fun fetchArticles(source : String) {
         uiState.value = uiState.value.copy(isLoading = true)
 
-        // 1. MUDANÇA: O URL foi atualizado para o DummyJSON
         val request = Request.Builder()
-            .url("https://dummyjson.com/products")
+            // Vai buscar os detalhes de um produto específico
+            .url("https://dummyjson.com/products/${id}")
             .build()
 
         val client = OkHttpClient()
@@ -50,22 +51,16 @@ class ArticlesListViewModel : ViewModel() {
                         return
                     }
 
-                    val newsResult = response.body!!.string()
-                    val jsonResult = JSONObject(newsResult)
-                    val articlesList = arrayListOf<Article>()
+                    // O resultado agora é um ÚNICO objeto, não uma lista
+                    val productResult = response.body!!.string()
+                    val jsonResult = JSONObject(productResult)
 
-
-                    val articlesJson = jsonResult.getJSONArray("products")
-                    for (i in 0 until articlesJson.length()) {
-                        val articleJson = articlesJson.getJSONObject(i)
-                        // A nossa função Article.fromJson já sabe como "traduzir"
-                        val article = Article.fromJson(articleJson)
-                        articlesList.add(article)
-                    }
+                    // Usamos a mesma função fromJson para "traduzir"
+                    val article = Article.fromJson(jsonResult)
 
                     uiState.value = uiState.value.copy(
                         isLoading = false,
-                        articles = articlesList
+                        article = article
                     )
                 }
             }
